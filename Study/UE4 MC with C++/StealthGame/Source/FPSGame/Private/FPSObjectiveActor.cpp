@@ -4,7 +4,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "FPSCharacter.h"
 
 // Sets default values
 AFPSObjectiveActor::AFPSObjectiveActor()
@@ -13,13 +13,18 @@ AFPSObjectiveActor::AFPSObjectiveActor()
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	RootComponent = MeshComp;
 
+
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
 	SphereComp->SetupAttachment(MeshComp);
 
 	//SphereComp->OnComponentBeginOverlap. // Not use, We Use NotifyActorBeginOverlap Event!
@@ -44,6 +49,14 @@ void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor * OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 
 	PlayEffects();
+
+	AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
+	if (MyCharacter)
+	{
+		MyCharacter->bIsCarryingObjective = true;
+
+		Destroy();
+	}
 }
 
 void AFPSObjectiveActor::PlayEffects() 
