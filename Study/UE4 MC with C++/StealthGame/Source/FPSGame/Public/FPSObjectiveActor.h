@@ -7,6 +7,7 @@
 #include "FPSObjectiveActor.generated.h"
 
 class USphereComponent;
+class UParticleSystem;
 
 UCLASS()
 class FPSGAME_API AFPSObjectiveActor : public AActor

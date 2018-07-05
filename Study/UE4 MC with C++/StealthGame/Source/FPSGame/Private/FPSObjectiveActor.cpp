@@ -22,7 +22,7 @@ AFPSObjectiveActor::AFPSObjectiveActor()
 	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	SphereComp->SetupAttachment(MeshComp);
 
-	//SphereComp->OnComponentBeginOverlap.
+	//SphereComp->OnComponentBeginOverlap. // Not use, We Use NotifyActorBeginOverlap Event!
 }
 
 // Called when the game starts or when spawned
