@@ -7,6 +7,7 @@
 #include "FPSExtractionZone.generated.h"
 
 class UBoxComponent;
+class UDecalComponent;
 	
 UCLASS()
 class FPSGAME_API AFPSExtractionZone : public AActor
