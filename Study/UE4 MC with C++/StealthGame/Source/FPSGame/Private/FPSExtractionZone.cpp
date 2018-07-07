@@ -17,6 +17,7 @@ AFPSExtractionZone::AFPSExtractionZone()
 	OverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapComp"));
 	OverlapComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+
 	OverlapComp->SetBoxExtent(FVector(200.0f));
 
 	RootComponent = OverlapComp;
