@@ -18,6 +18,8 @@ AAIGuard::AAIGuard()
 void AAIGuard::BeginPlay()
 {
 	Super::BeginPlay();
+
+	OriginalRotation = GetActorRotation();
 	
 	//Binding See and Hear Function!
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AAIGuard::OnPawnSeen);
@@ -36,12 +38,25 @@ void AAIGuard::OnPawnSeen(APawn* SeenPawn)
 
 void AAIGuard::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location, float Volume)
 {
-	//if (Instigator == nullptr)
-	//{
-	//	return;
-	//}
-	//DrawDebugSphere(GetWorld(), NoiseInstigator->GetActorLocation(), 32.0f, 12, FColor::Blue, false, 10.0f);
 	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Blue, false, 10.0f);
+
+	
+	FVector Direction = Location - GetActorLocation();
+	Direction.Normalize();
+
+	FRotator NewLookAt = FRotationMatrix::MakeFromX(Direction).Rotator();
+	NewLookAt.Pitch = 0;
+	NewLookAt.Roll = 0;
+
+	SetActorRotation(NewLookAt);
+
+	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
+	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AAIGuard::ResetOrientation, 3.0f );
+}
+
+void AAIGuard::ResetOrientation()
+{
+	SetActorRotation(OriginalRotation);
 }
 
 // Called every frame
