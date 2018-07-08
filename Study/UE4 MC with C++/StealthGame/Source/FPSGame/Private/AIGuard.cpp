@@ -18,7 +18,8 @@ AAIGuard::AAIGuard()
 void AAIGuard::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
+	//Binding See and Hear Function!
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AAIGuard::OnPawnSeen);
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AAIGuard::OnNoiseHeard);
 }
