@@ -40,7 +40,8 @@ void AAIGuard::OnNoiseHeard(APawn * NoiseInstigator, const FVector & Location, f
 	//{
 	//	return;
 	//}
-	DrawDebugSphere(GetWorld(), NoiseInstigator->GetActorLocation(), 32.0f, 12, FColor::Blue, false, 10.0f);
+	//DrawDebugSphere(GetWorld(), NoiseInstigator->GetActorLocation(), 32.0f, 12, FColor::Blue, false, 10.0f);
+	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Blue, false, 10.0f);
 }
 
 // Called every frame
