@@ -14,7 +14,6 @@ class USoundBase;
 class UAnimSequence;
 class UPawnNoiseEmitterComponent;
 
-
 UCLASS()
 class AFPSCharacter : public ACharacter
 {
@@ -58,7 +57,11 @@ public:
 protected:
 	
 	/** Fires a projectile. */
+	UFUNCTION(BlueprintCallable)
 	void Fire();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerFire();
 
 	/** Handles moving forward/backward */
 	void MoveForward(float Val);
