@@ -57,7 +57,7 @@ public:
 protected:
 	
 	/** Fires a projectile. */
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void Fire();
 
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -78,5 +78,6 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return CameraComponent; }
 
+	virtual void Tick(float DeltaTime) override;
 };
 

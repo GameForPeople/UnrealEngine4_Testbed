@@ -53,8 +53,6 @@ void AFPSCharacter::Fire()
 {
 	ServerFire();
 
-	//UE_LOG(LogTemp, Warning, TEXT(".cpp, line,  "));
-
 	// try and play the sound if specified
 	if (FireSound)
 	{
@@ -84,6 +82,8 @@ void AFPSCharacter::ServerFire_Implementation()
 		//Set Spawn Collision Handling Override
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+		//UE_LOG(LogTemp, Warning, TEXT(".cpp, line,  "));
 
 		// who spawn it!
 		ActorSpawnParams.Instigator = this;
@@ -115,5 +115,18 @@ void AFPSCharacter::MoveRight(float Value)
 	{
 		// add movement in that direction
 		AddMovementInput(GetActorRightVector(), Value);
+	}
+}
+
+void AFPSCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (!IsLocallyControlled()) 
+	{
+		FRotator NewRot = CameraComponent->RelativeRotation;
+		NewRot.Pitch = this->RemoteViewPitch * 360.0f / 255.0f;
+
+		CameraComponent->SetRelativeRotation(NewRot);
 	}
 }
