@@ -4,10 +4,9 @@
 
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
-
 #include "FPSGameMode.h"
-
 #include "AI/Navigation/NavigationSystem.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AAIGuard::AAIGuard()
@@ -110,6 +109,11 @@ void AAIGuard::ResetOrientation()
 	}
 }
 
+void AAIGuard::OnRep_GuardState()
+{
+	OnStateChanged(GuardState);
+}
+
 void AAIGuard::SetGuardState(EAIState NewState)
 {
 	if (GuardState == NewState)
@@ -119,7 +123,15 @@ void AAIGuard::SetGuardState(EAIState NewState)
 
 	GuardState = NewState;
 
+	OnRep_GuardState();
 	OnStateChanged(GuardState);
+}
+
+void AAIGuard::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAIGuard, GuardState);
 }
 
 void AAIGuard::MoveToNextPatrolPoint()
