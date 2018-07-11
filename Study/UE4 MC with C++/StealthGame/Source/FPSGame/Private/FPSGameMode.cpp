@@ -6,6 +6,8 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "FPSGameStateBase.h"
+
 AFPSGameMode::AFPSGameMode()
 {
 	// set default pawn class to our Blueprinted character
@@ -14,6 +16,8 @@ AFPSGameMode::AFPSGameMode()
 
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
+
+	GameStateClass = AFPSGameStateBase::StaticClass();
 }
 
 void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
@@ -45,6 +49,14 @@ void AFPSGameMode::CompleteMission(APawn* InstigatorPawn, bool bMissionSuccess)
 			UE_LOG(LogTemp, Warning, TEXT("SpectatingViewpointClass is Nullptr"));
 		}
 	}
+
+	AFPSGameStateBase* GS = GetGameState<AFPSGameStateBase>();
+	if (GS)
+	{
+		GS->MulticastOnMissionComplete(InstigatorPawn, bMissionSuccess);
+	}
+	//Cast<AFPSGameStateBase>(GameStateClass)->MulticastOnMissionComplete(InstigatorPawn, bMissionSuccess);
+	
 
 	OnMissionCompleted(InstigatorPawn, bMissionSuccess);
 

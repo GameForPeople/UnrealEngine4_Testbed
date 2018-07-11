@@ -124,7 +124,7 @@ void AAIGuard::SetGuardState(EAIState NewState)
 	GuardState = NewState;
 
 	OnRep_GuardState();
-	OnStateChanged(GuardState);
+	//OnStateChanged(GuardState);
 }
 
 void AAIGuard::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
