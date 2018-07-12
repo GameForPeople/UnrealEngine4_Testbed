@@ -27,6 +27,10 @@ protected:
 
 	void MoveRight(float Value);
 
+	void BeginCrouch();
+
+	void EndCrouch();
+
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Components")
 	UCameraComponent* CameraComp;
 
