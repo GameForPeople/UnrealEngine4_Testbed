@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "SWeapon.h"
-
+#include "DrawDebugHelpers.h"
+#include "kismet/GameplayStatics.h"
 
 // Sets default values
 ASWeapon::ASWeapon()
@@ -18,6 +19,42 @@ void ASWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ASWeapon::fire()
+{
+	//Trace For World ; From Pawn Eyes to Crosshair location
+	
+	AActor* MyOwner = GetOwner();
+	if (MyOwner)
+	{
+		FVector EyeLocation;
+		FRotator EyeRotation;
+
+		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+
+		FVector ShortDirection = EyeRotation.Vector();
+
+		FVector TraceEnd = EyeLocation + (ShortDirection * 10000);
+
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(MyOwner);
+		QueryParams.AddIgnoredActor(this);
+		QueryParams.bTraceComplex = true;
+
+		FHitResult Hit;
+		if (GetWorld()->LineTraceSingleByChannel(Hit, EyeLocation, TraceEnd, ECC_Visibility, QueryParams))
+		{
+			// Blocking Hit! Process
+
+			AActor* HitActor = Hit.GetActor();
+
+			UGameplayStatics::ApplyPointDamage(HitActor, 20.0f, ShortDirection, Hit, MyOwner->GetInstigatorController(), this, DamageType);
+		}
+
+		DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
+	}
+
 }
 
 // Called every frame
