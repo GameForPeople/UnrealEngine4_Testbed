@@ -33,12 +33,13 @@ void ASWeapon::fire()
 	//Trace For World ; From Pawn Eyes to Crosshair location
 	
 	AActor* MyOwner = GetOwner();
+	
 	if (MyOwner)
 	{
 		FVector EyeLocation;
 		FRotator EyeRotation;
 
-		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
+		MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation); // Eye Location, Eye Rotation
 
 		FVector ShortDirection = EyeRotation.Vector();
 
@@ -69,7 +70,7 @@ void ASWeapon::fire()
 			TracerEndPoint = Hit.ImpactPoint;
 		}
 
-		DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
+		//DrawDebugLine(GetWorld(), EyeLocation, TraceEnd, FColor::White, false, 1.0f, 0, 1.0f);
 
 		if (MuzzleEffect) 
 		{
