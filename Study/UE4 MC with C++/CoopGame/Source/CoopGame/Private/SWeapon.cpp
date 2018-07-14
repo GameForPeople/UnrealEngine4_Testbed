@@ -8,6 +8,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 
+#include "Camera/CameraShake.h"
+
 static int32 DebugWeaponDrawing = 0;
 FAutoConsoleVariableRef CVARDebugWeaponDrawing ( 
 	TEXT("COOP_DebugWeapons"), 
@@ -101,6 +103,16 @@ void ASWeapon::PlayFireEffects(FVector TracerEndPoint)
 		if (TracerComp)
 		{
 			TracerComp->SetVectorParameter("Target", TracerEndPoint);
+		}
+	}
+
+	APawn* MyOwner = Cast<APawn>(GetOwner());
+	if (MyOwner)
+	{
+		APlayerController* PC = Cast<APlayerController>(MyOwner->GetController());
+		if (PC)
+		{
+			PC->ClientPlayCameraShake(FireCameraShake);
 		}
 	}
 }
