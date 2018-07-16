@@ -36,7 +36,7 @@ ASCharacter::ASCharacter()
 	CameraComp->bUsePawnControlRotation = false;
 	CameraComp->SetupAttachment(SpringArmComp);
 
-	ZoomedFOV = 50.0f;
+	ZoomedFOV = 30.0f;
 	ZoomInterpSpeed = 20.0f;
 
 	WeaponAttachSocketName = "WeaponSocket";
@@ -176,5 +176,6 @@ void ASCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ASCharacter, CurrentWeapon);
+	DOREPLIFETIME(ASCharacter, bDied);
 }
 
