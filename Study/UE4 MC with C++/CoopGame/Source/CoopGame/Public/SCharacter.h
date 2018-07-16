@@ -38,7 +38,6 @@ protected:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 
-	
 	bool bWantsToZoom;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
@@ -53,6 +52,7 @@ protected:
 
 	void EndZoom();
 
+	UPROPERTY(Replicated)
 	ASWeapon* CurrentWeapon;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
