@@ -12,7 +12,7 @@
 #include "CoopGame.h"
 
 #include "Components/CapsuleComponent.h"
-
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -34,7 +34,7 @@ ASCharacter::ASCharacter()
 	CameraComp->bUsePawnControlRotation = false;
 	CameraComp->SetupAttachment(SpringArmComp);
 
-	ZoomedFOV = 65.0f;
+	ZoomedFOV = 50.0f;
 	ZoomInterpSpeed = 20.0f;
 
 	WeaponAttachSocketName = "WeaponSocket";
@@ -116,6 +116,9 @@ void ASCharacter::OnHealthChanged(USHealthComponent* HealthComp, float Health, f
 		GetMovementComponent()->StopMovementImmediately();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+		DetachFromControllerPendingDestroy();
+
+		SetLifeSpan(10.0f);
 	}
 }
 

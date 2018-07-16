@@ -38,9 +38,7 @@ protected:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
 
-
-	USHealthComponent* HealthComp;
-
+	
 	bool bWantsToZoom;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
@@ -82,4 +80,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual FVector GetPawnViewLocation() const override;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Components")
+	USHealthComponent* HealthComp;
+
 };
