@@ -13,6 +13,7 @@
 
 #include "DrawDebugHelpers.h"
 
+#include "SHealthComponent.h"
 // Sets default values
 ASTrackerBot::ASTrackerBot()
 {
@@ -25,6 +26,10 @@ ASTrackerBot::ASTrackerBot()
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
 
+	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
+	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
+
+
 	bUseVelocityChange = false;
 	MovementForce = 1000;
 	RequireDistanceToTarget = 100.0f;
@@ -36,6 +41,11 @@ void ASTrackerBot::BeginPlay()
 	Super::BeginPlay();
 	
 	NextPathPoint = GetNextPathPoint();
+}
+
+void ASTrackerBot::HandleTakeDamage(USHealthComponent * InputHealthComp, float Health, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
+{
+	//UE_LOG(LogTemp, Log, TEXT("OMG! I'm Sick! My Health is %s"), *FString::SanitizeFloat(Health), *GetName());
 }
 
 FVector ASTrackerBot::GetNextPathPoint()
@@ -63,7 +73,7 @@ void ASTrackerBot::Tick(float DeltaTime)
 	{
 		NextPathPoint = GetNextPathPoint();
 
-		DrawDebugString(GetWorld(), GetActorLocation(), "Test Result is True!");
+		//DrawDebugString(GetWorld(), GetActorLocation(), "Test Result is True!");
 	}
 	else
 	{
