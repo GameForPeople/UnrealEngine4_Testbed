@@ -31,8 +31,8 @@ ASTrackerBot::ASTrackerBot()
 
 
 	bUseVelocityChange = false;
-	MovementForce = 1000;
-	RequireDistanceToTarget = 100.0f;
+	MovementForce = 800;
+	RequireDistanceToTarget = 300.0f;
 }
 
 // Called when the game starts or when spawned
@@ -46,6 +46,17 @@ void ASTrackerBot::BeginPlay()
 void ASTrackerBot::HandleTakeDamage(USHealthComponent * InputHealthComp, float Health, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {
 	//UE_LOG(LogTemp, Log, TEXT("OMG! I'm Sick! My Health is %s"), *FString::SanitizeFloat(Health), *GetName());
+
+	if (MatInst == nullptr)
+	{
+		MatInst = MeshComp->CreateAndSetMaterialInstanceDynamicFromMaterial(0, MeshComp->GetMaterial(0));
+	}
+
+	if (MatInst) 
+	{
+		MatInst->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
+	}
+	
 }
 
 FVector ASTrackerBot::GetNextPathPoint()
@@ -78,9 +89,14 @@ void ASTrackerBot::Tick(float DeltaTime)
 	else
 	{
 		FVector ForceDirection = NextPathPoint - GetActorLocation();
+		
+		//MovementForce = ForceDirection.Size();
+		//ForceDirection.Normalize();
+		//ForceDirection *= (MovementForce * 2);
+		
 		ForceDirection.Normalize();
-
 		ForceDirection *= MovementForce;
+
 		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Cyan, false, 0.0f, 1.0f);
 		MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
 	}

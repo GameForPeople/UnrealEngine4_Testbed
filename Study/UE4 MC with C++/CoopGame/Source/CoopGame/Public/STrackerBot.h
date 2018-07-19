@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	bool bUseVelocityChange;
 
+	//Dynamic Material to Pulse on Damage
+	UMaterialInstanceDynamic* MatInst;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
