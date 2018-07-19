@@ -18,6 +18,8 @@
 
 #include "SCharacter.h"
 
+#include "Sound/SoundCue.h"
+
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -48,6 +50,8 @@ ASTrackerBot::ASTrackerBot()
 
 	ExplosionDamage = 40;
 	ExplosionRadius = 200;
+
+	SelfDamageInterval = 0.25f;
 }
 
 // Called when the game starts or when spawned
@@ -110,6 +114,8 @@ void ASTrackerBot::SelfDestruct()
 
 	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoreActors, this, GetInstigatorController(), true);
 
+	UGameplayStatics::SpawnSoundAttached(ExplodeSound, RootComponent); // , NAME_None, GetActorLocation());
+
 	DrawDebugSphere(GetWorld(), NextPathPoint, ExplosionRadius, 12, FColor::Red, false, 2.0, 0.0f, 1.0f);
 
 	Destroy();
@@ -162,9 +168,13 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor * OtherActor)
 
 		if (PlayerPawn)
 		{
-			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
 
 			bStartedSelfDestruction = true;
+
+			//UGameplayStatics::PlaySoundAttached(SelfDestructSound, RootComponent);
+			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent); // , NAME_None, GetActorLocation());
+
 		}
 	}
 }
