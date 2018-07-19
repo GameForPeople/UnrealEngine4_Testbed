@@ -29,10 +29,14 @@ ASTrackerBot::ASTrackerBot()
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
 
+	ExplosionEffect;
 
 	bUseVelocityChange = false;
 	MovementForce = 800;
 	RequireDistanceToTarget = 300.0f;
+
+	ExplosionDamage = 40;
+	ExplosionRadius = 200;
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +61,10 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent * InputHealthComp, float H
 		MatInst->SetScalarParameterValue("LastTimeDamageTaken", GetWorld()->TimeSeconds);
 	}
 	
+	if (Health <= 0) 
+	{
+		SelfDestruct();
+	}
 }
 
 FVector ASTrackerBot::GetNextPathPoint()
@@ -71,6 +79,27 @@ FVector ASTrackerBot::GetNextPathPoint()
 	}
 
 	return GetActorLocation();
+}
+
+void ASTrackerBot::SelfDestruct()
+{
+	if (bExploded) 
+	{
+		return;
+	}
+
+	bExploded = true;
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
+
+	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Add(this);
+
+	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoreActors, this, GetInstigatorController(), true);
+
+	DrawDebugSphere(GetWorld(), NextPathPoint, ExplosionRadius, 12, FColor::Red, false, 2.0, 0.0f, 1.0f);
+
+	Destroy();
 }
 
 // Called every frame
