@@ -59,7 +59,11 @@ void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	NextPathPoint = GetNextPathPoint();
+	//서버에서만 할래요 1
+	if (Role == ROLE_Authority) 
+	{
+		NextPathPoint = GetNextPathPoint();
+	}
 
 	//OnActorBeginOverlap.AddDynamic();
 }
@@ -109,16 +113,25 @@ void ASTrackerBot::SelfDestruct()
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
 
-	TArray<AActor*> IgnoreActors;
-	IgnoreActors.Add(this);
-
-	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoreActors, this, GetInstigatorController(), true);
-
 	UGameplayStatics::SpawnSoundAttached(ExplodeSound, RootComponent); // , NAME_None, GetActorLocation());
 
-	DrawDebugSphere(GetWorld(), NextPathPoint, ExplosionRadius, 12, FColor::Red, false, 2.0, 0.0f, 1.0f);
+	MeshComp->SetVisibility(false, true);
 
-	Destroy();
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (Role == ROLE_Authority)
+	{
+		TArray<AActor*> IgnoreActors;
+		IgnoreActors.Add(this);
+
+		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoreActors, this, GetInstigatorController(), true);
+
+		DrawDebugSphere(GetWorld(), NextPathPoint, ExplosionRadius, 12, FColor::Red, false, 2.0, 0.0f, 1.0f);
+
+		//Destroy();
+
+		SetLifeSpan(2.0f);
+	}
 }
 
 
@@ -127,30 +140,33 @@ void ASTrackerBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	//FVector::Distance(GetActorLocation(), NextPathPoint) < RequireDistanceToTarget
-	if((GetActorLocation() - NextPathPoint).Size() < RequireDistanceToTarget)
-	//if (!GetActorLocation().Equals(NextPathPoint))
+	if (Role == ROLE_Authority && !bExploded) 
 	{
-		NextPathPoint = GetNextPathPoint();
+		//FVector::Distance(GetActorLocation(), NextPathPoint) < RequireDistanceToTarget
+		if ((GetActorLocation() - NextPathPoint).Size() < RequireDistanceToTarget)
+			//if (!GetActorLocation().Equals(NextPathPoint))
+		{
+			NextPathPoint = GetNextPathPoint();
 
-		//DrawDebugString(GetWorld(), GetActorLocation(), "Test Result is True!");
+			//DrawDebugString(GetWorld(), GetActorLocation(), "Test Result is True!");
+		}
+		else
+		{
+			FVector ForceDirection = NextPathPoint - GetActorLocation();
+
+			//MovementForce = ForceDirection.Size();
+			//ForceDirection.Normalize();
+			//ForceDirection *= (MovementForce * 2);
+
+			ForceDirection.Normalize();
+			ForceDirection *= MovementForce;
+
+			DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Cyan, false, 0.0f, 1.0f);
+			MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
+		}
+
+		DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Magenta, false, 0.0f, 1.0f);
 	}
-	else
-	{
-		FVector ForceDirection = NextPathPoint - GetActorLocation();
-		
-		//MovementForce = ForceDirection.Size();
-		//ForceDirection.Normalize();
-		//ForceDirection *= (MovementForce * 2);
-		
-		ForceDirection.Normalize();
-		ForceDirection *= MovementForce;
-
-		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Cyan, false, 0.0f, 1.0f);
-		MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
-	}
-
-	DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Magenta, false, 0.0f, 1.0f);
 }
 
 // Called to bind functionality to input
@@ -162,19 +178,21 @@ void ASTrackerBot::Tick(float DeltaTime)
 
 void ASTrackerBot::NotifyActorBeginOverlap(AActor * OtherActor)
 {
-	if (!bStartedSelfDestruction) {
-
+	if (!bStartedSelfDestruction && !bExploded) 
+	{
 		ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
 
 		if (PlayerPawn)
 		{
-			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
 
-			bStartedSelfDestruction = true;
+			if (Role == ROLE_Authority)
+			{
+				GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
+			}
+				bStartedSelfDestruction = true;
 
-			//UGameplayStatics::PlaySoundAttached(SelfDestructSound, RootComponent);
-			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent); // , NAME_None, GetActorLocation());
-
+				//UGameplayStatics::PlaySoundAttached(SelfDestructSound, RootComponent);
+				UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent); // , NAME_None, GetActorLocation());
 		}
 	}
 }

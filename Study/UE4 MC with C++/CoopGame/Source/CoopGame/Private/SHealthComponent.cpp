@@ -35,6 +35,14 @@ void USHealthComponent::BeginPlay()
 	Health = DefaultHealth;
 }
 
+// 새로운 레플리케이트 2단계
+void USHealthComponent::OnRep_Health(float OldHealth)
+{
+	float Damage = Health - OldHealth;
+
+	OnHealthChanged.Broadcast(this, Health, Damage, nullptr, nullptr, nullptr);
+}
+
 void USHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {
 	if (Damage <= 0.0f)
