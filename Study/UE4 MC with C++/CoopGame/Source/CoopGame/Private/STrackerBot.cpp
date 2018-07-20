@@ -45,8 +45,8 @@ ASTrackerBot::ASTrackerBot()
 	SphereComp->SetupAttachment(RootComponent);
 
 	bUseVelocityChange = false;
-	MovementForce = 800;
-	RequireDistanceToTarget = 300.0f;
+	MovementForce = 1000;
+	RequireDistanceToTarget = 200.0f;
 
 	ExplosionDamage = 40;
 	ExplosionRadius = 200;
